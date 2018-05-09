@@ -8,12 +8,16 @@ namespace MusicLibrary.Lib
   public static class DiskScanner
   {
     // get file/directory name from path
+    private static string GetName(string path)
+    {
+      return Path.GetFileName(path);
+    }
     private static IEnumerable<string> GetNames(IEnumerable<string> paths)
     {
       List<string> names = new List<string>();
       foreach (string path in paths)
       {
-        names.Add(Path.GetFileName(path));
+        names.Add(GetName(path));
       }
 
       return names;
@@ -33,23 +37,39 @@ namespace MusicLibrary.Lib
       return GetNames(dirPaths);
     }
 
-    public static IEnumerable<Models.File> Scan(string path)
+    public static Models.File Scan(string path)
     {
-      IEnumerable<string> fileNames = GetFileNames(path);
+      if (System.IO.File.Exists(path))
+      {
+        return new Models.File(GetName(path), FileType.File, path);
+      }
+
+      Models.File rootFile = new Models.File(GetName(path), FileType.Folder, path);
+      return Scan(rootFile);
+    }
+
+    public static Models.File Scan(Models.File parent)
+    {
+      if (parent.FileType != FileType.Folder)
+      {
+        return parent;
+      }
+      string path = parent.GetPath();
+      
       IEnumerable<string> dirNames = GetDirNames(path);
-
-      List<Models.File> files = new List<Models.File>();
-
-      foreach (string fileName in fileNames)
+      foreach(string dirName in dirNames)
       {
-        files.Add(new Models.File(fileName, FileType.File));
-      }
-      foreach (string dirName in dirNames)
-      {
-        files.Add(new Models.File(dirName, FileType.Folder));
+        Models.File file = new Models.File(dirName, FileType.Folder, parent);
+        Scan(file);
       }
 
-      return files;
+      IEnumerable<string> fileNames = GetFileNames(path);
+      foreach(string fileName in fileNames)
+      {
+        Models.File file = new Models.File(fileName, FileType.File, parent);
+      }
+
+      return parent;
     }
   }
 }

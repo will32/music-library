@@ -2,7 +2,7 @@ namespace MusicLibrary.Models
 {
   using System.Collections.Generic;
 
-  public abstract class TreeStruc<TTree>
+  public abstract class TreeStruct<TTree>
   {
     private TTree _parent;
 
@@ -31,20 +31,14 @@ namespace MusicLibrary.Models
       }
     }
 
-    public TreeStruc()
+    public TreeStruct()
     {
       _parent = default(TTree);
     }
 
-    public TreeStruc(TTree parent)
+    public TreeStruct(TTree parent)
     {
       _parent = parent;
-    }
-
-    public TreeStruc<TTree> AddChild(TTree child)
-    {
-      Children.Add(child);
-      return this;
     }
   }
 }

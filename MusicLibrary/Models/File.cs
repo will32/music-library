@@ -9,10 +9,13 @@ namespace MusicLibrary.Models
     public FileType FileType { get; set; }
     public string Name { get; set; }
 
-    public File(string name, FileType fileType) : base()
+    private string RootPath { get; }
+
+    public File(string name, FileType fileType, string rootPath) : base()
     {
       FileType = fileType;
       Name = name;
+      RootPath = rootPath;
     }
 
     public File(string name, FileType fileType, File parent) : base(parent)
@@ -21,14 +24,16 @@ namespace MusicLibrary.Models
       Name = name;
     }
 
+    //trace the path until it get to the root
     public string GetPath()
     {
       List<string> paths = new List<string>();
       File pointer = this;
-      do {
+      do
+      {
         paths.Add(pointer.Name);
         pointer = pointer.Parent;
-      } while(pointer != default(File));
+      } while (pointer != default(File));
 
       paths.Reverse();
       return Path.Combine(paths.ToArray());

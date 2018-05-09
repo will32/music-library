@@ -4,41 +4,36 @@ namespace MusicLibrary.Models
 
   public abstract class TreeStruct<TTree>
   {
-    private TTree _parent;
 
     public List<TTree> Children { get; set; }
-    public TTree Parent
+    public TTree Parent { get; internal set; }
+
+    public bool HasChild
     {
       get
-      {
-        return _parent;
-      }
-    }
-
-    public bool HasChild 
-    {
-      get 
       {
         return Children.Count > 0;
       }
     }
 
-    public bool IsRoot 
+    public bool IsRoot
     {
-      get 
+      get
       {
-        return _parent == null;
+        return EqualityComparer<TTree>.Default.Equals(Parent);
       }
     }
 
     public TreeStruct()
     {
-      _parent = default(TTree);
+      Parent = default(TTree);
+      Children = new List<TTree>();
     }
 
     public TreeStruct(TTree parent)
     {
-      _parent = parent;
+      Parent = parent;
+      Children = new List<TTree>();
     }
   }
 }

@@ -22,6 +22,8 @@ namespace MusicLibrary.Models
     {
       FileType = fileType;
       Name = name;
+      Parent = parent;
+      parent.Children.Add(this);
     }
 
     //trace the path until it get to the root
@@ -29,13 +31,9 @@ namespace MusicLibrary.Models
     {
       List<string> paths = new List<string>();
       File pointer = this;
-      do
-      {
-        paths.Add(pointer.Name);
-        pointer = pointer.Parent;
-      } while (pointer != default(File));
 
-      while(pointer.Parent != default(File)) {
+      while (pointer.Parent != default(File))
+      {
         paths.Add(pointer.Name);
         pointer = pointer.Parent;
       }

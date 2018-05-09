@@ -4,7 +4,7 @@ using MusicLibrary.Enums;
 
 namespace MusicLibrary.Models
 {
-  public class File : TreeStruc<File>
+  public class File : TreeStruct<File>
   {
     public FileType FileType { get; set; }
     public string Name { get; set; }
@@ -34,6 +34,13 @@ namespace MusicLibrary.Models
         paths.Add(pointer.Name);
         pointer = pointer.Parent;
       } while (pointer != default(File));
+
+      while(pointer.Parent != default(File)) {
+        paths.Add(pointer.Name);
+        pointer = pointer.Parent;
+      }
+
+      paths.Add(pointer.RootPath);
 
       paths.Reverse();
       return Path.Combine(paths.ToArray());

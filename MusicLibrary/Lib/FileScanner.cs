@@ -1,18 +1,29 @@
 using System.Collections.Generic;
-using System.IO;
-using MusicLibrary.Models;
+using System.IO.Abstractions;
 using MusicLibrary.Enums;
 
 namespace MusicLibrary.Lib
 {
-  public static class DiskScanner
+  public class FileScanner
   {
-    // get file/directory name from path
-    private static string GetName(string path)
+    private readonly IFileSystem _fileSystem;
+
+    public FileScanner(IFileSystem fileSystem)
     {
-      return Path.GetFileName(path);
+      _fileSystem = fileSystem;
     }
-    private static IEnumerable<string> GetNames(IEnumerable<string> paths)
+
+    public FileScanner()
+      : this(new FileSystem())
+    {
+    }
+
+    // get file/directory name from path
+    private string GetName(string path)
+    {
+      return _fileSystem.Path.GetFileName(path);
+    }
+    private IEnumerable<string> GetNames(IEnumerable<string> paths)
     {
       List<string> names = new List<string>();
       foreach (string path in paths)
@@ -24,20 +35,21 @@ namespace MusicLibrary.Lib
     }
 
     // get list of files in format of path
-    private static IEnumerable<string> GetFileNames(string path)
+    private IEnumerable<string> GetFileNames(string path)
     {
-      string[] filePaths = Directory.GetFiles(path);
+      string[] filePaths = _fileSystem.Directory.GetFiles(path);
       return GetNames(filePaths);
     }
 
     // get list of dirs in format of path
-    private static IEnumerable<string> GetDirNames(string path)
+    private IEnumerable<string> GetDirNames(string path)
     {
-      string[] dirPaths = Directory.GetDirectories(path);
+      string[] dirPaths = _fileSystem.Directory.GetDirectories(path);
       return GetNames(dirPaths);
     }
 
-    public static Models.File Scan(string path)
+    
+    public Models.File Scan(string path)
     {
       if (System.IO.File.Exists(path))
       {
@@ -48,7 +60,7 @@ namespace MusicLibrary.Lib
       return Scan(rootFile);
     }
 
-    public static Models.File Scan(Models.File parent)
+    public Models.File Scan(Models.File parent)
     {
       if (parent.FileType != FileType.Folder)
       {
